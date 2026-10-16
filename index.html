@@ -268,6 +268,19 @@ body.show-notes #notes-panel { display: block; }
 .grandma-quote figcaption span {
     font-style: italic;
 }
+
+#notes-panel a {
+  color: #e8c6ff;
+  text-decoration: underline;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+#notes-panel a:hover {
+  color: #fff;
+  pointer-events: auto;
+}
+
   </style>
  </head>
  <body class="impress-not-supported">
@@ -279,6 +292,9 @@ body.show-notes #notes-panel { display: block; }
    <section class="step intro" data-scale="1" data-x="0" data-y="-3200" id="tytul">
     <img alt="Latająca kluska z tęczowym śladem" class="heading-image-kluska" src="./imgs/kluska-transparent.gif"/>
     <img alt="Kluski. Próba klasyfikacji." class="title-art" src="./imgs/header.png"/>
+    <aside class="speaker-notes">
+      <a href="https://docs.google.com/spreadsheets/d/12rpGPEbrILRSaj3cr3RybiNH_J1N1bKj3HdNwJ4JRTg/edit?usp=sharing" target="_blank">Lista produktów tradycyjnych</a>
+    </aside>
    </section>
    <section class="step overview" data-scale="5" data-x="0" data-y="0" id="mapa">
     <header>
@@ -313,7 +329,7 @@ body.show-notes #notes-panel { display: block; }
        <p>
         Ugotowany ziemniak
         <br/>
-        W tej grupie także kopytka.
+        także: Kopytka
        </p>
        <div class="ingredient-label">
         <img alt="" src="./imgs/ingredients/cooked.png"/>
@@ -332,7 +348,7 @@ body.show-notes #notes-panel { display: block; }
        <p>
         Surowy ziemniak
         <br/>
-        W tej grupie także goły.
+        także: Goły, Haluszki
        </p>
        <div class="ingredient-label">
         <img alt="" src="./imgs/ingredients/potato.png"/>
@@ -648,7 +664,13 @@ if (typeof impress === "function") {
 
     function updateNotes(step) {
         const notes = step.querySelector(".speaker-notes");
-        notesPanel.textContent = notes ? notes.textContent.trim() : "";
+        notesPanel.replaceChildren();
+
+        if (notes) {
+            notesPanel.append(
+                ...Array.from(notes.childNodes, node => node.cloneNode(true))
+            );
+        }
     }
 
     document.addEventListener("impress:stepenter", function (event) {
