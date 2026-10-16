@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pl">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+    Kluski. Próba klasyfikacji.
+  </title>
+  <link href="./css/impress-common.css" rel="stylesheet"/>
+  <style>
+   
+:root {
+    --ink: #352039;
+    --muted: #76567e;
+    --pink: #d8b9df;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background-color: white;
+    background-image: url("./imgs/pixel_stars_tile.gif");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    image-rendering: pixelated;
+}
+
+.step {
+    position: relative;
+    width: 1100px;
+    padding: 38px;
+}
+
+.card {
+    min-height: 710px;
+    background: rgba(255, 255, 255, 0.97);
+    text-align: center;
+}
+
+.card:not(.active) { opacity: 0.75; }
+.impress-on-mapa .card { opacity: 1; }
+
+h1, h2, h3, p { margin: 0; }
+h2 { margin-bottom: 20px; font-size: 52px; line-height: 1.1; }
+h3 { margin: 12px 0 8px; font-size: 27px; }
+p { font-size: 25px; line-height: 1.4; }
+small { font-size: 20px; }
+
+.eyebrow {
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.photo-grid--two {
+    max-width: 800px;
+    margin: 0 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 44px;
+}
+
+figure { margin: 0; min-width: 0; }
+
+.dumpling-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center;
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--pink);
+}
+
+.photo-grid--two .dumpling-photo { max-height: 295px; }
+figcaption { padding-top: 8px; }
+figcaption p { font-size: 22px; }
+
+.ingredient-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 58px;
+    margin-top: 12px;
+    font-size: 20px;
+    color: var(--muted);
+}
+
+.ingredient-label img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+}
+
+.punchline {
+    margin-top: 25px;
+    padding-top: 18px;
+    border-top: 3px dotted var(--pink);
+    font-size: 28px;
+    font-weight: 750;
+}
+
+.split {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 45px;
+    align-items: center;
+}
+
+.process { font-size: 31px; line-height: 1.65; }
+.name-cloud { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; padding: 25px 0; }
+.name-cloud span { padding: 14px 22px; background: #f1e6f6; font-size: 30px; }
+.name-cloud span:nth-child(even) { background: #e4effb; }
+.exception { margin-top: 24px; }
+
+.intro {
+    width: 1100px;
+    height: 800px;
+    text-align: center;
+}
+
+.title-art {
+    display: block;
+    width: 100%;
+    height: 800px;
+    object-fit: contain;
+}
+
+.flying-kluska {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 28px auto;
+    image-rendering: pixelated;
+}
+
+.intro-caption { color: var(--muted); font-size: 22px; }
+
+.overview {
+    width: 1200px;
+    height: 900px;
+    padding-top: 28px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.overview header { padding: 14px; background: rgba(255, 255, 255, 0.96); }
+.overview h2 { margin-bottom: 10px; }
+.overview p { font-size: 20px; }
+.speaker-notes { display: none; }
+
+#notes-panel {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    bottom: 44px;
+    left: 3%;
+    width: 94%;
+    padding: 20px;
+    background: rgba(53, 32, 57, 0.97);
+    color: #fff;
+    font-size: 19px;
+    line-height: 1.45;
+}
+
+body.show-notes #notes-panel { display: block; }
+.hint { position: fixed; right: 15px; bottom: 10px; padding: 5px 10px; background: #fffffff0; color: var(--muted); font-size: 13px; }
+.fallback-message { display: none; }
+.impress-not-supported .fallback-message { display: block; padding: 20px; }
+.impress-not-supported .step { position: relative; margin: 30px auto; opacity: 1; }
+.impress-not-supported .overview { height: auto; }
+
+.heading-image-kluska {
+  position: absolute;
+  top: 0px;
+  left: -300px;
+  height: 350px;
+}
+    .legend-slide h2 {
+    font-size: 48px;
+}
+
+    .legend-slide h2 {
+    margin-bottom: 8px;
+    font-size: 46px;
+}
+
+.legend-slide .legend-mascot {
+    display: block;
+    width: 420px;
+    height: 96px;
+    margin: 8px auto 18px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.legend-photos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px;
+    align-items: start;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.legend-photos figure {
+    min-width: 0;
+    margin: 0;
+}
+
+.legend-photos .legend-photo {
+    display: block;
+    width: 100%;
+    height: 285px;
+    object-fit: contain;
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--pink);
+}
+
+.legend-photos figcaption {
+    padding-top: 12px;
+    color: var(--muted);
+    font-size: 19px;
+    text-align: center;
+}
+
+.legend-slide .punchline {
+    margin-top: 20px;
+    padding-top: 16px;
+    font-size: 26px;
+}
+    .grandma-quote {
+    margin: 25px 0 0;
+    padding: 20px 15px 0;
+    border-top: 3px dotted var(--pink, #d8b9df);
+    text-align: center;
+}
+
+.grandma-quote blockquote {
+    margin: 0;
+    color: var(--ink, #352039);
+    font-size: 32px;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+.grandma-quote figcaption {
+    margin-top: 10px;
+    padding: 0;
+    color: var(--muted, #76567e);
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+.grandma-quote figcaption span {
+    font-style: italic;
+}
+  </style>
+ </head>
+ <body class="impress-not-supported">
+  <div class="fallback-message">
+    <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+    <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+  </div>
+  <div data-height="850" data-transition-duration="850" data-width="1200" id="impress">
+   <section class="step intro" data-scale="1" data-x="0" data-y="-3200" id="tytul">
+    <img alt="Latająca kluska z tęczowym śladem" class="heading-image-kluska" src="./imgs/kluska-transparent.gif"/>
+    <img alt="Kluski. Próba klasyfikacji." class="title-art" src="./imgs/header.png"/>
+   </section>
+   <section class="step overview" data-scale="5" data-x="0" data-y="0" id="mapa">
+    <header>
+     <p class="eyebrow">
+      KLUSKI. PRÓBA KLASYFIKACJI.
+     </p>
+     <h2>
+      Z czego jesteś, klusko?
+     </h2>
+     <p>
+      Ziemniak · twaróg · mąka i jajko · drożdże · regionalny chaos
+     </p>
+     <p>
+      Podział umowny: według bazy ciasta, nie wszystkich składników.
+     </p>
+    </header>
+   </section>
+   <section class="step card" data-scale="1" data-x="-1700" data-y="-650" id="ziemniaczane">
+    <p class="eyebrow">
+     01 / ZIEMNIAK
+    </p>
+    <h2>
+     Trzy stany ziemniaka
+    </h2>
+    <div class="photo-grid">
+     <figure>
+      <img alt="Śląskie" class="dumpling-photo" height="400" src="./imgs/dumplings/slaskie.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Śląskie
+       </h3>
+       <p>
+        Ugotowany ziemniak
+        <br/>
+        W tej grupie także kopytka.
+       </p>
+       <div class="ingredient-label">
+        <img alt="" src="./imgs/ingredients/cooked.png"/>
+        <span>
+         ugotowany
+        </span>
+       </div>
+      </figcaption>
+     </figure>
+     <figure>
+      <img alt="Szare" class="dumpling-photo" height="400" src="./imgs/dumplings/szare.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Szare
+       </h3>
+       <p>
+        Surowy ziemniak
+        <br/>
+        W tej grupie także goły.
+       </p>
+       <div class="ingredient-label">
+        <img alt="" src="./imgs/ingredients/potato.png"/>
+        <span>
+         surowy
+        </span>
+       </div>
+      </figcaption>
+     </figure>
+     <figure>
+      <img alt="Czarne" class="dumpling-photo" height="400" src="./imgs/dumplings/czarne.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Czarne
+       </h3>
+       <p>
+        Surowy + ugotowany
+        <br/>
+        Podobnie część pyz.
+       </p>
+       <div class="ingredient-label">
+        <img alt="" src="./imgs/ingredients/potato.png"/>
+        <img alt="" src="./imgs/ingredients/cooked.png"/>
+        <span>
+         mieszane
+        </span>
+       </div>
+      </figcaption>
+     </figure>
+    </div>
+    <p class="punchline">
+     Nie „czy ziemniak?”, tylko „co mu zrobiono?”.
+    </p>
+   </section>
+   <section class="step card" data-scale="1" data-x="0" data-y="-650" id="leniwe">
+    <p class="eyebrow">
+     02 / TWARÓG
+    </p>
+    <h2>
+     Kontrola tożsamości
+    </h2>
+    <div class="photo-grid photo-grid--two">
+     <figure>
+      <img alt="Kopytka" class="dumpling-photo" height="600" src="./imgs/dumplings/kopytka.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Kopytka
+       </h3>
+       <p>
+        Baza: ziemniak
+       </p>
+       <div class="ingredient-label">
+        <img alt="" src="./imgs/ingredients/cooked.png"/>
+        <span>
+         ziemniaki
+        </span>
+       </div>
+      </figcaption>
+     </figure>
+     <figure>
+      <img alt="Leniwe" class="dumpling-photo" height="600" src="./imgs/dumplings/leniwe.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Leniwe
+       </h3>
+       <p>
+        Baza: twaróg
+        <br/>
+        <small>
+         Ziemniaki? Opcjonalnie.
+        </small>
+       </p>
+       <div class="ingredient-label">
+        <img alt="" src="./imgs/ingredients/cheese.png"/>
+        <span>
+         twaróg
+        </span>
+       </div>
+      </figcaption>
+     </figure>
+    </div>
+    <p class="punchline">
+     Nie oceniaj kluski po szadze.
+    </p>
+   </section>
+   <section class="step card" data-scale="1" data-x="1700" data-y="-650" id="maczne">
+    <p class="eyebrow">
+     03 / MĄKA + JAJKO
+    </p>
+    <h2>
+     Wlej albo rozszarp
+    </h2>
+    <div class="photo-grid photo-grid--two">
+     <figure>
+      <img alt="Lane" class="dumpling-photo" height="600" src="./imgs/dumplings/lane.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Lane
+       </h3>
+       <p>
+        Rzadkie ciasto → strumień
+       </p>
+      </figcaption>
+     </figure>
+     <figure>
+      <img alt="Zacierki" class="dumpling-photo" height="600" src="./imgs/dumplings/zacierki.jpg" width="600"/>
+      <figcaption>
+       <h3>
+        Zacierki
+       </h3>
+       <p>
+        Twarde ciasto → tarcie lub rwanie
+       </p>
+      </figcaption>
+     </figure>
+    </div>
+    <div class="ingredient-label">
+     <img alt="" src="./imgs/ingredients/flour.png"/>
+     <img alt="" src="./imgs/ingredients/egg.png"/>
+     <span>
+      mąka + jajko
+     </span>
+    </div>
+   <figure class="grandma-quote">
+    <blockquote>
+        „Lej, dziecko. Wszystko samo się ułoży.”
+    </blockquote>
+
+    <figcaption>
+        — babcia, prekursorka <span lang="en">go with the flow</span>
+    </figcaption>
+</figure>
+   </section>
+
+   <section
+    id="pyzy"
+    class="step card"
+    data-x="-1700"
+    data-y="750"
+    data-scale="1"
+>
+    <p class="eyebrow">04 / TO SKOMPLIKOWANE</p>
+
+    <h2>Pyzy. Ale które?</h2>
+
+    <div class="photo-grid photo-grid--two">
+        <figure>
+            <img
+                class="dumpling-photo"
+                src="./imgs/dumplings/pyzy-ziemniaczane.jpg"
+                alt="Pyzy ziemniaczane"
+                width="600"
+                height="600"
+            >
+
+            <figcaption>
+                <h3>Ziemniaczane</h3>
+                <p>Ziemniaki w roli głównej.</p>
+            </figcaption>
+        </figure>
+
+        <figure>
+            <img
+                class="dumpling-photo"
+                src="./imgs/dumplings/pyzy-drozdzowe.jpg"
+                alt="Pyzy drożdżowe gotowane na parze"
+                width="600"
+                height="600"
+            >
+
+            <figcaption>
+                <h3>Drożdżowe</h3>
+                <p>Ciasto drożdżowe i para.</p>
+            </figcaption>
+        </figure>
+    </div>
+
+    <p class="punchline">
+      Wszystkie opcje dozwolone.
+    </p>
+
+</section>
+<section
+    id="knedle"
+    class="step card"
+    data-x="0"
+    data-y="750"
+    data-scale="1"
+>
+    <p class="eyebrow">05 / TO SKOMPLIKOWANE</p>
+
+    <h2>Knedle. Jedna nazwa to za mało.</h2>
+
+    <div class="photo-grid">
+        <figure>
+            <img
+                class="dumpling-photo"
+                src="./imgs/dumplings/knedle_w_bulce.jpg"
+                alt="Pierwsza odmiana knedli"
+                width="600"
+                height="400"
+            >
+
+            <figcaption>
+                <h3>Knedle</h3>
+                <p>wielkopolska</p>
+            </figcaption>
+        </figure>
+
+        <figure>
+            <img
+                class="dumpling-photo"
+                src="./imgs/dumplings/knedle_szpinak.jpg"
+                alt="Druga odmiana knedli"
+                width="600"
+                height="400"
+            >
+
+            <figcaption>
+                <h3>Knedle</h3>
+                <p>nowoczesne</p>
+            </figcaption>
+        </figure>
+
+        <figure>
+            <img
+                class="dumpling-photo"
+                src="./imgs/dumplings/knedle_morela_mak.jpg"
+                alt="Trzecia odmiana knedli"
+                width="600"
+                height="400"
+            >
+
+            <figcaption>
+                <h3>Knedle</h3>
+                <p>Austria</p>
+            </figcaption>
+        </figure>
+    </div>
+
+    <p class="punchline">
+        Knedel to nie przepis. To multiwersum.
+    </p>
+
+</section>
+<section
+    id="kluska-uciekinierka"
+    class="step card legend-slide"
+    data-x="1700"
+    data-y="750"
+    data-scale="1"
+>
+    <p class="eyebrow">06 / NAWET KLUSKA MA SWOJE GRANICE</p>
+
+    <h2>
+        Żona odeszła<br>
+        warunki pozostały
+    </h2>
+
+    <img
+        class="flying-kluska legend-mascot"
+        src="./imgs/kluska-transparent.gif"
+        alt="Latająca kluska z tęczowym śladem"
+        style="position: absolute; top:50px; left:0"
+    >
+
+    <div class="legend-photos">
+        <figure>
+            <img
+                class="legend-photo"
+                src="./imgs/brama-kluskowa.jpg"
+                alt="Widok Bramy Kluskowej we Wrocławiu"
+            >
+
+            <figcaption>
+                Brama Kluskowa we Wrocławiu
+            </figcaption>
+        </figure>
+
+        <figure>
+            <img
+                class="legend-photo"
+                src="./imgs/skamieniala-kluska.jpg"
+                alt="Zbliżenie na detal nazywany w legendzie skamieniałą kluską"
+            >
+
+            <figcaption>
+                skamieniała kluska, bohaterka — zbliżenie
+            </figcaption>
+        </figure>
+    </div>
+
+    <p class="punchline">
+        Nie każda kluska kończy na talerzu.<br>
+        Niektóre robią karierę w architekturze.
+    </p>
+</section>
+  </div>
+  <div aria-live="polite" id="notes-panel">
+  </div>
+  <div class="hint">
+   ← → / spacja: dalej · 0: mapa
+  </div>
+  <script src="./js/impress.js">
+  </script>
+  <script>
+   
+if (typeof impress === "function") {
+    const presentation = impress();
+    presentation.init();
+
+    const notesPanel = document.getElementById("notes-panel");
+
+    function updateNotes(step) {
+        const notes = step.querySelector(".speaker-notes");
+        notesPanel.textContent = notes ? notes.textContent.trim() : "";
+    }
+
+    document.addEventListener("impress:stepenter", function (event) {
+        updateNotes(event.target);
+    });
+
+    updateNotes(document.querySelector(".step.active") || document.querySelector(".step"));
+
+    document.addEventListener("keydown", function (event) {
+        if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+        if (event.key.toLowerCase() === "n") {
+            document.body.classList.toggle("show-notes");
+        }
+
+        if (event.key === "0") {
+            presentation.goto("mapa");
+        }
+    });
+}
+
+  </script>
+ </body>
+</html>
